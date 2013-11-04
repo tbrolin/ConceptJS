@@ -70,6 +70,8 @@ var unIts = (function () {
       }
     });
 
+    // Q: Should 'this' point to shared unit scope or like here have a
+    //    reference (this.unit) to it?
     scope = {};
     scope.unit = unit.scope;
     return unit.fn.apply(scope, args);

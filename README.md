@@ -1,14 +1,14 @@
 ## Synopsis
 
-unIts is a modular framework for javascript projects. It makes it possible to
-structure code in units that have well defined interfaces. It also presents the
+unIts is a modular KISS framework for javascript projects. It makes it possible to
+structure code in units with well defined interfaces. It also presents the
 notion of dependency management between theese unIts.
 
 ## Code Example
 
 First define a unit:
 
-    // unIts.define(name, dependencies, code-body)
+    // unIts.define(name?, dependencies?, codeFn?)
     unIts.define('calc', [], function () {
       var API = {};
 
