@@ -65,7 +65,7 @@ will `throw`.
 
 Ok, so *unitName* is a `string`, *dependencies* is an `Array` of strings and
 *unitFunction* is a `Function`. The arguments are all optional, however the
-order they are specified is not.
+order which they are specified in is not.
 
 The function returns a *unitDefinition* `object`.
 
