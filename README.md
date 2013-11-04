@@ -43,21 +43,50 @@ a unit test then write the unit (hence the name duh).
 
 ### `unIts()`
 
-returns the unIts version
+Returns the unIts version
 
 ### `unIts(unitName)`
 
-if defined, returns the api, if any, of the unit with the name *unitName* (Uh, yes,
-if it is a string that is...)
+If defined, returns an api-instance, if any, of the unit with the name *unitName* (uh, yes,
+if it is a string that is...), If no unit with *unitName* is defined it will `throw`, also,
+if any unit specified as a dependency (see below) to the unit is not defined it will
+`throw`.
+
+Any arguments after *unitName* gets passed to the *unitFunction* (see below) of the unit.
 
 ### `unIts(unitDefinition)`
 
-extracts the api, if any, from the unit defined by the *unitDefinition*. The 
-*unitDefinition* is an object as returned by the `unIts.define()` function.
+Extracts an api-instance, if any, from the unit defined by the *unitDefinition*. The
+*unitDefinition* is an object as returned by the `unIts.define()` function. If
+it does not recognize *unitDefinition* as a, well, unit-definition object, it
+will `throw`.
 
 ### `unIts.define(unitName?, dependencies?, unitFunction?)`
 
-Explanation coming soon.
+Ok, so *unitName* is a `string`, *dependencies* is an `Array` of strings and
+*unitFunction* is a `Function`. The arguments are all optional, however the
+order they are specified is not.
+
+The function returns a *unitDefinition* `object`.
+
+#### *unitName*
+
+If provided, this is the identifier of the unit and is used with the `unIts(unitName)`
+function to get an api-instance of the unit.
+
+#### *dependencies*
+
+An array of *unitName*s that the unit depends on. Dependencies are checked at evaluation
+time (when the unit is asked for) and not on definition time.
+
+#### *unitFunction*
+
+The *unitFunction* is the core of the unit. It returns an api-instance of the unit
+(if such exists).
+
+## Examples
+
+TODO: Come up with a nifty example!
 
 ## Contributors
 
