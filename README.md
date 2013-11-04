@@ -26,17 +26,46 @@ Then use it:
 
 ## Motivation
 
+What's so special with this? Well nothing really, and that I guess is what's so
+special about it. I wanted to write modular javascript code with as little magic
+as possible. A definite goal was that it should be extremely TDD-friendly, write
+a unit test then write the unit (hence the name duh).
+
 ## Installation
+
+- git clone *url*
+- npm install
+- grunt
+
+...or just copy the content of src/un.units.js to somewhere nice.
 
 ## API Reference
 
-## Tests
+### `unIts()`
+
+returns the unIts version
+
+### `unIts(unitName)`
+
+if defined, returns the api, if any, of the unit with the name *unitName* (Uh, yes,
+if it is a string that is...)
+
+### `unIts(unitDefinition)`
+
+extracts the api, if any, from the unit defined by the *unitDefinition*. The 
+*unitDefinition* is an object as returned by the `unIts.define()` function.
+
+### `unIts.define(unitName?, dependencies?, unitFunction?)`
+
+Explanation coming soon.
 
 ## Contributors
 
 Tobias Brolin tbrolin@kth.se
 
 ## License
+
+I found this on the internet:
 
 The MIT License (MIT)
 
