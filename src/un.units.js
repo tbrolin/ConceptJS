@@ -1,4 +1,4 @@
-var unIts = (function () {
+(function (exports) {
   'use strict';
 
   var units = {};
@@ -70,8 +70,8 @@ var unIts = (function () {
       }
     });
 
-    // Q: Should 'this' point to shared unit scope or like here have a
-    //    reference (this.unit) to it?
+    // TODO: Should 'this' point to shared unit scope or like here have a
+    // reference (this.unit) to it?
     scope = {};
     scope.unit = unit.scope;
     return unit.fn.apply(scope, args);
@@ -79,6 +79,9 @@ var unIts = (function () {
 
   /**
    * Defines a new unit.
+   *
+   * FIXME: Anonymous units does impose a memory-leak
+   * TODO: Should default unitFn return an empty object?
    *
    * @returns
    */
@@ -142,5 +145,7 @@ var unIts = (function () {
    *
    */
   API.error = error;
-  return API;
-})();
+
+  exports.unIts = API;
+
+})(typeof exports === 'undefined' ? this : exports);
