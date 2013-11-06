@@ -8,6 +8,7 @@ notion of dependency management between theese unIts.
 
 First define a unit:
 
+```javascript
     // unIts.define(name?, dependencies?, codeFn?)
     unIts.define('calc', [], function () {
       var API = {};
@@ -18,11 +19,14 @@ First define a unit:
 
       return API;
     });
+```
 
 Then use it:
 
+```javascript
     var calculator = unIts('calc');
     var result = calculator.add(2, 4); // result === 6 ...
+```
 
 ## Motivation
 
