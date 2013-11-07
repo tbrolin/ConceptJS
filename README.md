@@ -4,6 +4,8 @@ unIts is a KISS modular framework for javascript projects. It makes it possible 
 structure code in units with well defined interfaces. It also presents the
 notion of dependency management between theese unIts.
 
+[![browser support](https://ci.testling.com/tbrolin/unIts.png)](https://ci.testling.com/tbrolin/unIts)
+
 ## Code Example
 
 First define a unit:
@@ -86,7 +88,7 @@ time (when the unit is asked for) and not on definition time.
 #### *unitFunction*
 
 The *unitFunction* is the core of the unit. It returns an api-instance of the unit
-(if it has one). 
+(if it has one).
 
 ## Examples
 
