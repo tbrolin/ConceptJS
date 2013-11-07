@@ -10,11 +10,10 @@
   },
   "testling": {
     "scripts": ["lib/**/**.js","src/un.units.js","test/*.js"],
-    "browsers": ["iexplore/10.0",
-                 "chrome/29.0","chrome/canary",
-                 "firefox/24.0","firefox/nightly",
-                 "opera/15.0","opera/next",
-                 "safari/5.0.5","safari/5.1","safari/6.0",
-                 "iphone/6.0","ipad/6.0","android-browser/4.2"]
+    "browsers": [ "iexplore/10.0",
+                  "chrome/29.0","chrome/canary",
+                  "firefox/24.0","firefox/nightly",
+                  "opera/15.0","opera/next",
+                  "safari/5.1","safari/6.0" ]
   }
 }
