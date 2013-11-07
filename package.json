@@ -9,7 +9,7 @@
     "grunt-contrib-qunit": "~0.3.0"
   },
   "testling": {
-    "files": "test/runner.js",
+    "scripts": ["lib/**/**.js","src/un.units.js","test/*.js"],
     "browsers": ["iexplore/10.0",
                  "chrome/29.0","chrome/canary",
                  "firefox/24.0","firefox/nightly",

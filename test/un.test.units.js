@@ -1,3 +1,5 @@
+qunitTap(QUnit, function() { console.log.apply(console, arguments); });
+
 module('units');
 
 test('Getting the version.', 1, function () {
