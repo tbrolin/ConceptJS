@@ -6,7 +6,7 @@
 
   ['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'].forEach(function (name) {
     utils['is' + name] = function (obj) {
-      return {}.toString.call(obj) === '[object ' + name + ']';
+      return utils.toString.call(obj) === '[object ' + name + ']';
     };
   });
 
@@ -145,6 +145,7 @@
    *
    */
   API.error = error;
+  API.utils = utils;
 
   exports.unIts = API;
 
