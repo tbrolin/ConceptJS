@@ -1,4 +1,4 @@
-(function (exports) {
+var unIts = (function () {
   'use strict';
 
   var units = {};
@@ -147,6 +147,9 @@
   API.error = error;
   API.utils = utils;
 
-  exports.unIts = API;
+  return API;
+})();
 
-})(typeof exports === 'undefined' ? this : exports);
+if (module && module.exports) {
+  module.exports = unIts;
+}
