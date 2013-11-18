@@ -5,6 +5,9 @@ if (typeof require !== 'undefined') {
 unIts.define('units.promise', [], function () {
   var API = {};
 
+  /**
+  /* Creates and returnes a { resolve, reject, promise }
+   */
   API.defer = function () {
     var deferAPI = {}, on = {}, resolution, rejection;
 
@@ -14,20 +17,21 @@ unIts.define('units.promise', [], function () {
 
       var emitter = resolution ? on.resolved : on.rejected;
 
-      if (emitValue.then) {
+      if (emitValue && emitValue.then && unIts.utils.isFunction(emitValue.then)) {
         // case is promise
-        emitValue.then(function (value) {
-          on.resolved (value); }, function (reason) {
-          on.rejected (reason); }
-        );
+        emitValue.then(on.resolved, on.rejected);
       } else {
         setTimeout(function () {
           if (unIts.utils.isFunction(emitter)) {
-            emitter (emitValue);
+            try {
+              emitter (emitValue);
+            } catch (error) {
+              on.rejected (error);
+            }
           }
           on.resolved = null;
           on.rejected = null;
-        });
+        }, 4);
       }
     }
 
@@ -36,7 +40,7 @@ unIts.define('units.promise', [], function () {
         // throw 'Promise already resolved or rejected.';
         return;
       }
-      resolution = value;
+      resolution = value || true;
       if (on.resolved) {
         emit();
       }
@@ -47,7 +51,7 @@ unIts.define('units.promise', [], function () {
         // throw 'Promise already resolved or rejected';
         return;
       }
-      rejection = reason;
+      rejection = reason || true;
       if (on.rejected) {
         emit();
       }
@@ -67,8 +71,13 @@ unIts.define('units.promise', [], function () {
           if (predecessor && unIts.utils.isFunction(predecessor.onresolve)) {
             predecessor.onresolve(value);
           }
+
           try {
+            if (!unIts.utils.isFunction(onresolve)) {
+              onresolve = function () {};
+            }
             var nextValue = onresolve(value);
+            onresolve = null;
           } catch (error) {
             deferred.reject(error);
             return;
@@ -77,10 +86,21 @@ unIts.define('units.promise', [], function () {
         };
 
         on.rejected = function (reason) {
-          if (predecessor && unIts.utIls.isFunction(predecessor.onreject)) {
+          if (predecessor && unIts.utils.isFunction(predecessor.onreject)) {
             predecessor.onreject(reason);
           }
-          deferred.reject(onreject(reason));
+
+          try {
+            if (!unIts.utils.isFunction(onreject)) {
+              onreject = function () {};
+            }
+            var nextReason = onreject(reason);
+            onreject = null;
+          } catch (error) {
+            deferred.reject(error);
+            return;
+          }
+          deferred.reject(nextReason);
         };
 
         if (resolution || rejection) {

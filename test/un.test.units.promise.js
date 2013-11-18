@@ -75,7 +75,6 @@ asyncTest('Resolving a promise with values.', function () {
   });
   stop();
   stop();
-  stop();
 });
 
 asyncTest('Resolve promise with another promise.', function () {
@@ -93,4 +92,25 @@ asyncTest('Resolve promise with another promise.', function () {
     start();
   });
 
+});
+
+asyncTest('Ordering nested promise onresolve functionse.', function () {
+  var when = function (value) {
+    var deferred = unIts('units.promise').defer();
+    deferred.resolve(value);
+    return deferred.promise;
+  };
+
+  var promise = when('A');
+  var correctThenWasFinishedFirst = false;
+  promise.then(function (value) {
+    promise.then(function (value) {
+      ok (correctThenWasFinishedFirst, 'Insider.');
+      start();
+    });
+    stop();
+    correctThenWasFinishedFirst = true;
+    ok('A' === value, 'Otsider');
+    start();
+  });
 });
