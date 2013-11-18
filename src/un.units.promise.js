@@ -1,3 +1,5 @@
+var require = require || undefined;
+
 if (typeof require !== 'undefined') {
   var unIts = require('./un.units');
 }
