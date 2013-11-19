@@ -5,16 +5,27 @@ if (typeof require !== 'undefined') {
 }
 
 unIts.define('units.promise', [], function () {
-  var API = {};
+  var API = {}, promises = {};
+  if (typeof this.unit.promiseCount === 'undefined') {
+    this.unit.promiseCount = 0;
+  }
+
+  var unitScope = this;
+
+    var getID = function () {
+    return ('promise' + unitScope.unit.promiseCount++);
+  };
 
   /**
   /* Creates and returnes a { resolve, reject, promise }
    */
   API.defer = function () {
     var deferAPI = {}, on = {}, resolution, rejection;
-
+    var promiseID = getID();
+    // console.log('DEBUG: CREATE ' + promiseID);
     // Unleash the execution chain reaction
     function emit () {
+      // console.log('DEBUG: PRE-EMIT ' + promiseID);
       var emitValue = rejection || resolution;
 
       var emitter = resolution ? on.resolved : on.rejected;
@@ -26,6 +37,7 @@ unIts.define('units.promise', [], function () {
         setTimeout(function () {
           if (unIts.utils.isFunction(emitter)) {
             try {
+              // console.log('DEBUG: EMIT ' + promiseID);
               emitter (emitValue);
             } catch (error) {
               on.rejected (error);
@@ -43,7 +55,9 @@ unIts.define('units.promise', [], function () {
         return;
       }
       resolution = value || true;
+      // console.log('DEBUG: RESOLVE ' + promiseID);
       if (on.resolved) {
+        // console.log('DEBUG: RESOLVE-EMIT ' + promiseID);
         emit();
       }
     };
@@ -54,7 +68,9 @@ unIts.define('units.promise', [], function () {
         return;
       }
       rejection = reason || true;
+      // console.log('DEBUG: REJECT ' + promiseID);
       if (on.rejected) {
+        // console.log('DEBUG: REJECT-EMIT ' + promiseID);
         emit();
       }
     };
@@ -73,9 +89,9 @@ unIts.define('units.promise', [], function () {
           if (predecessor && unIts.utils.isFunction(predecessor.onresolve)) {
             predecessor.onresolve(value);
           }
-
           try {
             if (!unIts.utils.isFunction(onresolve)) {
+              console.log('onresolve ===' + onresolve);
               onresolve = function () {};
             }
             var nextValue = onresolve(value);
@@ -96,16 +112,17 @@ unIts.define('units.promise', [], function () {
             if (!unIts.utils.isFunction(onreject)) {
               onreject = function () {};
             }
-            var nextReason = onreject(reason);
+            var value = onreject(reason);
             onreject = null;
           } catch (error) {
             deferred.reject(error);
             return;
           }
-          deferred.reject(nextReason);
+          deferred.resolve(value);
         };
 
         if (resolution || rejection) {
+          // console.log('DEBUG: THEN-EMIT ' + promiseID);
           emit();
         }
 
