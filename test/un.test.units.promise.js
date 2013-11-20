@@ -39,7 +39,7 @@ asyncTest('Resolving a promise with values.', function () {
   var promiseC = promiseA.then(function (value) {
     // 3
     ok(value === 'A', 'PromiseA resolved with A again.');
-    start()
+    start();
     return 'C';
   });
   stop();
@@ -75,6 +75,7 @@ asyncTest('Resolving a promise with values.', function () {
   });
   stop();
   stop();
+  stop();
 });
 
 asyncTest('Resolve promise with another promise.', function () {
@@ -94,7 +95,7 @@ asyncTest('Resolve promise with another promise.', function () {
 
 });
 
-asyncTest('Ordering nested promise onresolve functionse.', function () {
+asyncTest('Ordering nested promise onresolve functions.', function () {
   var when = function (value) {
     var deferred = unIts('units.promise').defer();
     deferred.resolve(value);
@@ -113,4 +114,27 @@ asyncTest('Ordering nested promise onresolve functionse.', function () {
     ok('A' === value, 'Otsider');
     start();
   });
+  // stop();
+});
+
+asyncTest('Ordering nested promise onreject functions.', function () {
+  var when = function (value) {
+    var deferred = unIts('units.promise').defer();
+    deferred.reject(value);
+    return deferred.promise;
+  };
+
+  var promise = when('A');
+  var correctThenWasFinishedFirst = false;
+  promise.then(null, function (value) {
+    promise.then(null, function (value) {
+      ok (correctThenWasFinishedFirst, 'Insider.');
+      start();
+    });
+    stop();
+    correctThenWasFinishedFirst = true;
+    ok('A' === value, 'Otsider');
+    start();
+  });
+  // stop();
 });

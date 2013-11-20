@@ -6,124 +6,110 @@ if (typeof require !== 'undefined') {
 
 unIts.define('units.promise', [], function () {
   var API = {}, promises = {};
-  if (typeof this.unit.promiseCount === 'undefined') {
-    this.unit.promiseCount = 0;
-  }
-
-  var unitScope = this;
-
-    var getID = function () {
-    return ('promise' + unitScope.unit.promiseCount++);
-  };
 
   /**
   /* Creates and returnes a { resolve, reject, promise }
    */
   API.defer = function () {
-    var deferAPI = {}, on = {}, resolution, rejection;
-    var promiseID = getID();
-    // console.log('DEBUG: CREATE ' + promiseID);
+    var deferAPI = {}, on = {}, complete = false, resolution, rejection;
+
+    // console.log('DEBUG: CREATE);
     // Unleash the execution chain reaction
-    function emit () {
-      // console.log('DEBUG: PRE-EMIT ' + promiseID);
+    function fire () {
       var emitValue = rejection || resolution;
-
+      var typeOfEmit;
+      if (rejection) {
+        typeOfEmit = 'Reject';
+      } else if (resolution) {
+        typeOfEmit = 'Resolve';
+      } else {
+        typeOfEmit = 'Eh, Unknown';
+      }
       var emitter = resolution ? on.resolved : on.rejected;
-
       if (emitValue && emitValue.then && unIts.utils.isFunction(emitValue.then)) {
         // case is promise
         emitValue.then(on.resolved, on.rejected);
       } else {
         setTimeout(function () {
-          if (unIts.utils.isFunction(emitter)) {
-            try {
-              // console.log('DEBUG: EMIT ' + promiseID);
-              emitter (emitValue);
-            } catch (error) {
-              on.rejected (error);
-            }
-          }
-          on.resolved = null;
-          on.rejected = null;
-        }, 4);
+          // console.log('DEBUG: ' + typeOfEmit + ' firing with value ' + emitValue);
+          emitter(emitValue);
+          on.resolved = on.rejected = undefined;
+        });
       }
     }
 
     deferAPI.resolve = function (value) {
-      if (rejection || resolution) {
+      if (complete) {
         // throw 'Promise already resolved or rejected.';
         return;
       }
       resolution = value || true;
-      // console.log('DEBUG: RESOLVE ' + promiseID);
+      complete = true;
+      // console.log('DEBUG: RESOLVE');
       if (on.resolved) {
-        // console.log('DEBUG: RESOLVE-EMIT ' + promiseID);
-        emit();
+        // console.log('DEBUG: RESOLVE-EMIT');
+        fire();
       }
     };
 
     deferAPI.reject = function (reason) {
-      if (rejection || resolution) {
+      if (complete) {
         // throw 'Promise already resolved or rejected';
         return;
       }
       rejection = reason || true;
-      // console.log('DEBUG: REJECT ' + promiseID);
+      complete = true;
+      // console.log('DEBUG: REJECT');
       if (on.rejected) {
-        // console.log('DEBUG: REJECT-EMIT ' + promiseID);
-        emit();
+        // console.log('DEBUG: REJECT-EMIT');
+        fire();
       }
     };
 
     deferAPI.promise = {
       then: function (onresolve, onreject) {
-        var deferred = API.defer ();
+        var deferred = API.defer (), legacy;
 
-        if (on.resolved || on.rejected) {
-          var predecessor = {};
-          predecessor.onresolve = on.resolved;
-          predecessor.onreject = on.rejected;
+        if (!unIts.utils.isFunction(onreject)) {
+          onreject = function () {};
+        }
+        if (!unIts.utils.isFunction(onresolve)) {
+          onresolve = onreject;
         }
 
+        legacy = {
+          onresolve: on.resolved,
+          onreject: on.rejected
+        };
+
         on.resolved = function (value) {
-          if (predecessor && unIts.utils.isFunction(predecessor.onresolve)) {
-            predecessor.onresolve(value);
+          if (legacy.onresolve) {
+            legacy.onresolve(value);
           }
-          try {
-            if (!unIts.utils.isFunction(onresolve)) {
-              console.log('onresolve ===' + onresolve);
-              onresolve = function () {};
+          setTimeout(function () {
+            try {
+              deferred.resolve(onresolve(value));
+            } catch (error) {
+              deferred.reject(error);
             }
-            var nextValue = onresolve(value);
-            onresolve = null;
-          } catch (error) {
-            deferred.reject(error);
-            return;
-          }
-          deferred.resolve(nextValue);
+          });
         };
 
         on.rejected = function (reason) {
-          if (predecessor && unIts.utils.isFunction(predecessor.onreject)) {
-            predecessor.onreject(reason);
+          if (legacy.onreject) {
+            legacy.onreject(reason);
           }
-
-          try {
-            if (!unIts.utils.isFunction(onreject)) {
-              onreject = function () {};
+          setTimeout(function () {
+            try {
+              deferred.resolve(onreject(reason));
+            } catch (error) {
+              deferred.reject(error);
             }
-            var value = onreject(reason);
-            onreject = null;
-          } catch (error) {
-            deferred.reject(error);
-            return;
-          }
-          deferred.resolve(value);
+          });
         };
 
-        if (resolution || rejection) {
-          // console.log('DEBUG: THEN-EMIT ' + promiseID);
-          emit();
+        if (complete) {
+          fire ();
         }
 
         return deferred.promise;
