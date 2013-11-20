@@ -13,25 +13,18 @@ unIts.define('units.promise', [], function () {
   API.defer = function () {
     var deferAPI = {}, on = {}, complete = false, resolution, rejection;
 
-    // console.log('DEBUG: CREATE);
-    // Unleash the execution chain reaction
     function fire () {
+      // Here we can be sure that promise is resolved/rejected and that
+      // on.resolve and on.reject are functions.
       var emitValue = rejection || resolution;
-      var typeOfEmit;
-      if (rejection) {
-        typeOfEmit = 'Reject';
-      } else if (resolution) {
-        typeOfEmit = 'Resolve';
-      } else {
-        typeOfEmit = 'Eh, Unknown';
-      }
+
       var emitter = resolution ? on.resolved : on.rejected;
+
       if (emitValue && emitValue.then && unIts.utils.isFunction(emitValue.then)) {
         // case is promise
         emitValue.then(on.resolved, on.rejected);
       } else {
         setTimeout(function () {
-          // console.log('DEBUG: ' + typeOfEmit + ' firing with value ' + emitValue);
           emitter(emitValue);
           on.resolved = on.rejected = undefined;
         });
@@ -45,9 +38,7 @@ unIts.define('units.promise', [], function () {
       }
       resolution = value || true;
       complete = true;
-      // console.log('DEBUG: RESOLVE');
       if (on.resolved) {
-        // console.log('DEBUG: RESOLVE-EMIT');
         fire();
       }
     };
@@ -59,9 +50,7 @@ unIts.define('units.promise', [], function () {
       }
       rejection = reason || true;
       complete = true;
-      // console.log('DEBUG: REJECT');
       if (on.rejected) {
-        // console.log('DEBUG: REJECT-EMIT');
         fire();
       }
     };
@@ -90,7 +79,7 @@ unIts.define('units.promise', [], function () {
             try {
               var nextValue = onresolve(value);
               (nextValue === deferred.promise) ?
-                deferred.reject(new TypeError()) :
+                deferred.reject(new TypeError('Cannot return x from x.then')) :
                 deferred.resolve(nextValue);
             } catch (error) {
               deferred.reject(error);
@@ -106,7 +95,7 @@ unIts.define('units.promise', [], function () {
             try {
               var nextValue = onreject(reason);
               (nextValue === deferred.promise) ?
-                deferred.reject(new TypeError()) :
+                deferred.reject(new TypeError('Cannot return x from x.then')) :
                 deferred.resolve(nextValue);
             } catch (error) {
               deferred.reject(error);
