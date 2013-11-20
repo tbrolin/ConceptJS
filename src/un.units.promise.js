@@ -1,11 +1,9 @@
-var require = require || undefined;
-
 if (typeof require !== 'undefined') {
   var unIts = require('./un.units');
 }
 
 unIts.define('units.promise', [], function () {
-  var API = {}, promises = {};
+  var API = {};
 
   /**
   /* Creates and returnes a { resolve, reject, promise }
