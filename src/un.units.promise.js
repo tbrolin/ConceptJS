@@ -71,7 +71,7 @@ unIts.define('units.promise', [], function () {
         var deferred = API.defer (), legacy;
 
         if (!unIts.utils.isFunction(onreject)) {
-          onreject = function () {};
+          onreject = function (value) { return value; };
         }
         if (!unIts.utils.isFunction(onresolve)) {
           onresolve = onreject;
