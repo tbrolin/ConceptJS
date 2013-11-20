@@ -88,7 +88,10 @@ unIts.define('units.promise', [], function () {
           }
           setTimeout(function () {
             try {
-              deferred.resolve(onresolve(value));
+              var nextValue = onresolve(value);
+              (nextValue === deferred.promise) ?
+                deferred.reject(new TypeError()) :
+                deferred.resolve(nextValue);
             } catch (error) {
               deferred.reject(error);
             }
@@ -101,7 +104,10 @@ unIts.define('units.promise', [], function () {
           }
           setTimeout(function () {
             try {
-              deferred.resolve(onreject(reason));
+              var nextValue = onreject(reason);
+              (nextValue === deferred.promise) ?
+                deferred.reject(new TypeError()) :
+                deferred.resolve(nextValue);
             } catch (error) {
               deferred.reject(error);
             }
