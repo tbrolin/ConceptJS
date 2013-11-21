@@ -3,7 +3,12 @@ if (typeof require !== 'undefined') {
 }
 
 unIts.define('units.promise', [], function () {
-  var API = {};
+  var API = {},
+      isObject = unIts.utils.isObject,
+      isFunction = unIts.utils.isFunction;
+      isThenable = function (obj) {
+        return ( (isObject(obj) ||  isFunction(obj)) && isFunction(obj.then) );
+      };
 
   /**
   /* Creates and returnes a { resolve, reject, promise }
@@ -18,9 +23,9 @@ unIts.define('units.promise', [], function () {
 
       var emitter = resolution ? on.resolved : on.rejected;
 
-      if (emitValue && emitValue.then && unIts.utils.isFunction(emitValue.then)) {
-        // case is promise
-        emitValue.then(on.resolved, on.rejected);
+      if (isThenable(emitValue)) {
+        emitValue.then.apply(emitValue, [on.resolved, on.rejected]);
+        // emitValue.then(on.resolved, on.rejected);
       } else {
         setTimeout(function () {
           emitter(emitValue);
@@ -54,6 +59,7 @@ unIts.define('units.promise', [], function () {
     };
 
     deferAPI.promise = {
+      isAUnitsPromise: true,
       then: function (onresolve, onreject) {
         var deferred = API.defer (), legacy;
 
