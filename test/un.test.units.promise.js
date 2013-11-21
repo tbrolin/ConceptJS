@@ -138,3 +138,19 @@ asyncTest('Ordering nested promise onreject functions.', function () {
   });
   // stop();
 });
+
+asyncTest('Returning a promise in the resolve function.', function () {
+  var when = function (value) {
+    var deferred = unIts('units.promise').defer();
+    deferred.reject(value);
+    return deferred.promise;
+  };
+
+  when('A').then(function (value) {
+    ok ('A' === value, 'Got A as value.');
+    return when('B');
+  }).then(function (value) {
+    ok ('B' === value, 'Got B as value after A.');
+    start();
+  });
+});
