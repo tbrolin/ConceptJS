@@ -10,6 +10,10 @@ var unIts = (function () {
     };
   });
 
+  utils.isObject = function (obj) {
+    return obj === Object(obj);
+  };
+
   var error = function error (err, messages) {
     if (!messages || !messages[err.type]) {
       messages = {};
