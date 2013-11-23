@@ -142,7 +142,7 @@ asyncTest('Ordering nested promise onreject functions.', function () {
 asyncTest('Returning a promise in the resolve function.', function () {
   var when = function (value) {
     var deferred = unIts('units.promise').defer();
-    deferred.reject(value);
+    deferred.resolve(value);
     return deferred.promise;
   };
 
