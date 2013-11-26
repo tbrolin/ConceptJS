@@ -75,7 +75,7 @@ asyncTest('Resolving a promise with values.', function () {
   });
   stop();
   stop();
-  stop();
+  //stop();
 });
 
 asyncTest('Resolve promise with another promise.', function () {

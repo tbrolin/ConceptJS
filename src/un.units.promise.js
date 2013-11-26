@@ -4,116 +4,129 @@ if (typeof require !== 'undefined') {
 
 unIts.define('units.promise', [], function () {
   var API = {},
-      isObject = unIts.utils.isObject,
-      isFunction = unIts.utils.isFunction;
-      isThenable = function (obj) {
-        return ( (isObject(obj) ||  isFunction(obj)) && isFunction(obj.then) );
-      };
-
-  /**
-  /* Creates and returnes a { resolve, reject, promise }
-   */
-  API.defer = function () {
-    var deferAPI = {}, on = {}, complete = false, resolution, rejection;
-
-    function fire () {
-      // Here we can be sure that promise is resolved/rejected and that
-      // on.resolve and on.reject are functions.
-      var emitValue = rejection || resolution;
-
-      var emitter = resolution ? on.resolved : on.rejected;
-
-      if (isThenable(emitValue)) {
-        emitValue.then.apply(emitValue, [on.resolved, on.rejected]);
-        // emitValue.then(on.resolved, on.rejected);
-      } else {
-        setTimeout(function () {
-          emitter(emitValue);
-          on.resolved = on.rejected = undefined;
-        });
-      }
+    isObject = unIts.utils.isObject,
+    isFunction = unIts.utils.isFunction;
+    isThenable = function (obj) {
+      return ( (isObject(obj) ||  isFunction(obj)) && isFunction(obj.then) );
     }
+    async = setTimeout;
 
-    deferAPI.resolve = function (value) {
-      if (complete) {
-        // throw 'Promise already resolved or rejected.';
-        return;
-      }
-      resolution = value || true;
-      complete = true;
-      if (on.resolved) {
-        fire();
-      }
-    };
-
-    deferAPI.reject = function (reason) {
-      if (complete) {
-        // throw 'Promise already resolved or rejected';
-        return;
-      }
-      rejection = reason || true;
-      complete = true;
-      if (on.rejected) {
-        fire();
-      }
-    };
+  API.defer = function () {
+    // console.log('1. Creating a deferred.');
+    var deferAPI = {},
+      stoned = 'pending',
+      on = {},
+      resolution;
 
     deferAPI.promise = {
-      isAUnitsPromise: true,
+      isaunitspromise: true,
       then: function (onresolve, onreject) {
-        var deferred = API.defer (), legacy;
 
-        if (!unIts.utils.isFunction(onreject)) {
+        var deferred = API.defer();
+
+        if (!isFunction (onreject)) {
           onreject = function (value) { return value; };
         }
-        if (!unIts.utils.isFunction(onresolve)) {
+        if (!isFunction (onresolve)) {
           onresolve = onreject;
         }
 
-        legacy = {
-          onresolve: on.resolved,
-          onreject: on.rejected
+        var legacy = {
+          onresolve: on.resolve,
+          onreject: on.reject
         };
 
-        on.resolved = function (value) {
+        on.resolve = function (value) {
           if (legacy.onresolve) {
-            legacy.onresolve(value);
+            legacy.onresolve (value);
           }
-          setTimeout(function () {
+          async (function () {
             try {
-              var nextValue = onresolve(value);
-              (nextValue === deferred.promise) ?
-                deferred.reject(new TypeError('Cannot return x from x.then')) :
-                deferred.resolve(nextValue);
+              deferred.resolve (onresolve (value));
             } catch (error) {
               deferred.reject(error);
             }
           });
         };
 
-        on.rejected = function (reason) {
+        on.reject = function (reason) {
           if (legacy.onreject) {
-            legacy.onreject(reason);
+            legacy.onreject (reason);
           }
-          setTimeout(function () {
+          async (function () {
             try {
-              var nextValue = onreject(reason);
-              (nextValue === deferred.promise) ?
-                deferred.reject(new TypeError('Cannot return x from x.then')) :
-                deferred.resolve(nextValue);
+              deferred.resolve (onreject (reason));
             } catch (error) {
               deferred.reject(error);
             }
           });
         };
 
-        if (complete) {
-          fire ();
+        if (stoned) {
+          rocknroll();
         }
 
         return deferred.promise;
       }
     };
+
+    var rocknroll = function () {
+      // console.log('Rock n Roll.');
+      async(function () {
+        if ('resolved' === stoned && on.resolve) {
+          on.resolve(resolution);
+          on.resolve = undefined;
+        } else if ('rejected' === stoned && on.reject) {
+          on.reject(resolution);
+          on.reject = undefined;
+        }
+      });
+    };
+
+    var resolver = function (value, resolutionType) {
+      // console.log(promise);
+      if (deferAPI.promise === value) {
+        throw new TypeError();
+      } else if (value && value.isaunitspromise) {
+        // console.log(deferAPI.promise.then);
+        value.then(function (v) {
+          resolution = v;
+          stoned = 'resolved';
+          if (on.resolve) {
+            rocknroll();
+          }
+        }, function (r) {
+          resolution = r;
+          stoned = 'rejected';
+          if (on.reject) {
+            rocknroll();
+          }
+        });
+      } else if (isThenable(value)) {
+
+      } else {
+        resolution = value;
+        stoned = resolutionType;
+        if (on.resolve || on.reject) {
+          rocknroll();
+        }
+      }
+    };
+
+    deferAPI.resolve = function (value) {
+      if ('pending' !== stoned) {
+        return;
+      }
+      resolver (value, 'resolved');
+    };
+
+    deferAPI.reject = function (reason) {
+      if ('pending' !== stoned) {
+        return;
+      }
+      resolver (reason, 'rejected');
+    };
+
     return deferAPI;
   };
   return API;
