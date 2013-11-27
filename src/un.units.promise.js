@@ -8,7 +8,7 @@ unIts.define('units.promise', [], function () {
     isFunction = unIts.utils.isFunction;
     isThenable = function (obj) {
       return ( (isObject(obj) ||  isFunction(obj)) && isFunction(obj.then) );
-    }
+    };
     async = setTimeout;
 
   API.defer = function () {
