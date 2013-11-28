@@ -1,5 +1,6 @@
 if (typeof window === 'undefined') {
   var unIts = require('./un.units');
+  var asap = require('asap');
 }
 
 unIts.define('units.promise', [], function () {
@@ -9,7 +10,7 @@ unIts.define('units.promise', [], function () {
     isThenable = function (obj) {
       return ( (isObject(obj) ||  isFunction(obj)) );
     };
-    async = function (fn) { setTimeout(fn, 0); };
+    async = asap || function (fn) { setTimeout(fn, 0); };
 
   API.defer = function () {
     // console.log('1. Creating a deferred.');
@@ -17,6 +18,20 @@ unIts.define('units.promise', [], function () {
       stoned = 'pending',
       on = {},
       resolution;
+
+    deferAPI.resolve = function (value) {
+      if ('pending' !== stoned) {
+        return;
+      }
+      resolver (value, 'resolved');
+    };
+
+    deferAPI.reject = function (reason) {
+      if ('pending' !== stoned) {
+        return;
+      }
+      resolver (reason, 'rejected');
+    };
 
     deferAPI.promise = {
       isaunitspromise: true,
@@ -62,17 +77,13 @@ unIts.define('units.promise', [], function () {
           });
         };
 
-        if (stoned) {
-          rocknroll();
-        }
+        rocknroll();
 
         return deferred.promise;
       }
     };
 
-    var rocknroll = function () {
-      // console.log('Rock n Roll.');
-      //async(function () {
+    function rocknroll () {
         if ('resolved' === stoned && on.resolve) {
           on.resolve(resolution);
           on.resolve = undefined;
@@ -80,34 +91,23 @@ unIts.define('units.promise', [], function () {
           on.reject(resolution);
           on.reject = undefined;
         }
-      //});
-    };
+    }
 
-    var stone = function (value, choice) {
+    function stone (value, choice) {
       if ('pending' === stoned) {
         resolution = value;
         stoned = choice;
-        var roller = choice === 'rejected' ? on.reject : on.resolve;
-        if (roller) {
-          rocknroll ();
-        }
+        rocknroll ();
       }
     };
 
-    var resolver = function (value, resolutionType) {
+    function resolver (value, resolutionType) {
       if (deferAPI.promise === value) {
         throw new TypeError();
-      } else if (value && value.isaunitspromise) {
-//        deferAPI.promise.then.apply
-        value.then.apply(value, [function (v) {
-          stone (v, 'resolved');
-        }, function (r) {
-          stone (r, 'rejected');
-        }]);
       } else if (isThenable(value)) {
         try {
-        var then = value.then;
-      } catch (e) { stone (e, 'rejected'); }
+          var then = value.then;
+        } catch (e) { stone (e, 'rejected'); }
         if (isFunction (then)) {
           (function (then) {
             try {
@@ -144,21 +144,6 @@ unIts.define('units.promise', [], function () {
         stone (value, resolutionType);
       }
     };
-
-    deferAPI.resolve = function (value) {
-      if ('pending' !== stoned) {
-        return;
-      }
-      resolver (value, 'resolved');
-    };
-
-    deferAPI.reject = function (reason) {
-      if ('pending' !== stoned) {
-        return;
-      }
-      resolver (reason, 'rejected');
-    };
-
     return deferAPI;
   };
   return API;
