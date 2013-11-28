@@ -99,14 +99,15 @@ unIts.define('units.promise', [], function () {
         stoned = choice;
         rocknroll ();
       }
-    };
+    }
 
     function resolver (value, resolutionType) {
       if (deferAPI.promise === value) {
         throw new TypeError();
       } else if (isThenable(value)) {
+        var then;
         try {
-          var then = value.then;
+          then = value.then;
         } catch (e) { stone (e, 'rejected'); }
         if (isFunction (then)) {
           (function (then) {
@@ -143,7 +144,7 @@ unIts.define('units.promise', [], function () {
       } else {
         stone (value, resolutionType);
       }
-    };
+    }
     return deferAPI;
   };
   return API;
