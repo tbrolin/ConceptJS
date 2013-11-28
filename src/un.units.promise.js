@@ -7,9 +7,9 @@ unIts.define('units.promise', [], function () {
     isObject = unIts.utils.isObject,
     isFunction = unIts.utils.isFunction;
     isThenable = function (obj) {
-      return ( (isObject(obj) ||  isFunction(obj)) && isFunction(obj.then) );
+      return ( (isObject(obj) ||  isFunction(obj)) );
     };
-    async = setTimeout;
+    async = function (fn) { setTimeout(fn, 0); };
 
   API.defer = function () {
     // console.log('1. Creating a deferred.');
@@ -72,7 +72,7 @@ unIts.define('units.promise', [], function () {
 
     var rocknroll = function () {
       // console.log('Rock n Roll.');
-      async(function () {
+      //async(function () {
         if ('resolved' === stoned && on.resolve) {
           on.resolve(resolution);
           on.resolve = undefined;
@@ -80,7 +80,7 @@ unIts.define('units.promise', [], function () {
           on.reject(resolution);
           on.reject = undefined;
         }
-      });
+      //});
     };
 
     var stone = function (value, choice) {
@@ -96,7 +96,7 @@ unIts.define('units.promise', [], function () {
 
     var resolver = function (value, resolutionType) {
       if (deferAPI.promise === value) {
-        stone (new TypeError(), 'rejected');
+        throw new TypeError();
       } else if (value && value.isaunitspromise) {
 //        deferAPI.promise.then.apply
         value.then.apply(value, [function (v) {
@@ -105,37 +105,38 @@ unIts.define('units.promise', [], function () {
           stone (r, 'rejected');
         }]);
       } else if (isThenable(value)) {
-        (function (then) {
-          try {
-            var isResolved = false;
-            then.apply(value, [function (v) {
-              if (!isResolved) {
+        var then = value.then;
+        if (isFunction (then)) {
+          (function (then) {
+            try {
+              var done = false;
+              then(function (v) {
+                if (done) { return; }
                 try {
-                  resolver(v, 'resolved');
-                  isResolved = true;
+                  done = true;
+                  resolver (v, 'resolved');
                 } catch (e) {
-                  stone (e, 'rejected');
-                  isResolved = true;
+                  done = true;
+                  resolver (e, 'rejected');
                 }
-              }
-            }, function (r) {
-              if (!isResolved) {
+              }, function (r) {
+                if (done) { return; }
                 try {
-                  resolver(r, 'rejected');
-                  isResolved = true;
+                  done = true;
+                  resolver (r, 'rejected');
                 } catch (e) {
-                  stone (e, 'rejected');
-                  isResolved = true;
+                  done = true;
+                  resolver (e, 'rejected');
                 }
-              }
-            }]);
-          } catch (error) {
-            if (!isResolved) {
-              isResolved = true;
+              });
+            } catch (error) {
+              done = true;
               stone (error, 'rejected');
             }
-          }
-        })(value.then);
+          })(then.bind(value));
+        } else {
+          stone (value, resolutionType);
+        }
       } else {
         stone (value, resolutionType);
       }
