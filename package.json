@@ -1,4 +1,4 @@
-{
+a{
   "name": "unIts",
   "version": "0.1.0",
   "description": "unIts is a KISS modular framework for javascript projects",
@@ -10,10 +10,10 @@
     "promises-aplus-tests": "*"
   },
   "scripts": {
-    "test": "promises-aplus-tests ./test/un.test.units.promise.compliance.js"
+    "test": "promises-aplus-tests ./test/un.units.promise.compliance.adapter.js"
   },
   "testling": {
-    "scripts": ["lib/**/**.js","src/un.units.js","test/*.js"],
+    "scripts": ["lib/**/**.js","src/un.units.js","test/un.test.*.js"],
     "browsers": [ "iexplore/10.0",
                   "chrome/29.0","chrome/canary",
                   "firefox/24.0","firefox/nightly",
