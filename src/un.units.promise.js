@@ -105,7 +105,9 @@ unIts.define('units.promise', [], function () {
           stone (r, 'rejected');
         }]);
       } else if (isThenable(value)) {
+        try {
         var then = value.then;
+      } catch (e) { stone (e, 'rejected'); }
         if (isFunction (then)) {
           (function (then) {
             try {
