@@ -1,4 +1,4 @@
-if (!(typeof require === 'undefined')) {
+if (typeof window === 'undefined') {
   var unIts = require('./un.units');
 }
 
