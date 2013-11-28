@@ -130,6 +130,7 @@ unIts.define('units.promise', [], function () {
                 }
               });
             } catch (error) {
+              if (done) { return; }
               done = true;
               stone (error, 'rejected');
             }
