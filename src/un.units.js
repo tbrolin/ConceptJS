@@ -1,4 +1,4 @@
-(function (exports) {
+var unIts = (function () {
   'use strict';
 
   var units = {};
@@ -9,6 +9,10 @@
       return utils.toString.call(obj) === '[object ' + name + ']';
     };
   });
+
+  utils.isObject = function (obj) {
+    return obj === Object(obj);
+  };
 
   var error = function error (err, messages) {
     if (!messages || !messages[err.type]) {
@@ -147,6 +151,9 @@
   API.error = error;
   API.utils = utils;
 
-  exports.unIts = API;
+  return API;
+})();
 
-})(typeof exports === 'undefined' ? this : exports);
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = unIts;
+}

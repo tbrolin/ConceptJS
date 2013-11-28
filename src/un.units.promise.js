@@ -1,61 +1,147 @@
+if (typeof window === 'undefined') {
+  var unIts = require('./un.units');
+  var asap = require('asap');
+}
+
 unIts.define('units.promise', [], function () {
-  var API = {};
+  var API = {},
+    isObject = unIts.utils.isObject,
+    isFunction = unIts.utils.isFunction;
+    isThenable = function (obj) {
+      return ( (isObject(obj) ||  isFunction(obj)) );
+    };
+    async = asap || function (fn) { setTimeout(fn, 0); };
 
   API.defer = function () {
-    var deferAPI = {}, on = {}, resolution, rejection;
+    // console.log('1. Creating a deferred.');
+    var deferAPI = {},
+      stoned = 'pending',
+      on = {},
+      resolution;
+
     deferAPI.resolve = function (value) {
-      if (resolution || rejection) {
-        throw 'Promise already resolved or rejected.';
+      if ('pending' !== stoned) {
+        return;
       }
-      resolution = value;
-      if (on.resolved) {
-        on.resolved(value);
-        on.resolved = undefined;
-      }
+      resolver (value, 'resolved');
     };
 
     deferAPI.reject = function (reason) {
-      if (resolution || rejection) {
-        throw 'Promise already resolved or rejected';
+      if ('pending' !== stoned) {
+        return;
       }
-      rejection = reason;
-      if (on.rejected) {
-        on.rejected(reason);
-        on.rejected = undefined;
-      }
+      resolver (reason, 'rejected');
     };
 
     deferAPI.promise = {
+      isaunitspromise: true,
       then: function (onresolve, onreject) {
-        var deferred = API.defer ();
 
-        on.resolved = function (value) {
-          setTimeout(function () {
-            if (unIts.utils.isFunction (onresolve)) {
-              deferred.resolve (onresolve(value));
-            } else {
-              deferred.resolve();
+        var deferred = API.defer();
+
+        if (!isFunction (onreject)) {
+          onreject = function (value) { return value; };
+        }
+        if (!isFunction (onresolve)) {
+          onresolve = onreject;
+        }
+
+        var legacy = {
+          onresolve: on.resolve,
+          onreject: on.reject
+        };
+
+        on.resolve = function (value) {
+          if (legacy.onresolve) {
+            legacy.onresolve (value);
+          }
+          async (function () {
+            try {
+              deferred.resolve (onresolve (value));
+            } catch (error) {
+              deferred.reject(error);
             }
           });
         };
 
-        on.rejected = function (reason) {
-          setTimeout(function () {
-            if (unIts.utils.isFunction (onreject)) {
-              deferred.reject (onreject(reason));
-            } else {
-              deferred.reject();
+        on.reject = function (reason) {
+          if (legacy.onreject) {
+            legacy.onreject (reason);
+          }
+          async (function () {
+            try {
+              deferred.resolve (onreject (reason));
+            } catch (error) {
+              deferred.reject(error);
             }
-          }, 4);
+          });
         };
 
-        if (resolution) {
-          on.resolved (resolution);
-        } else if (rejection) {
-          on.rejected (rejection);
-        }
+        rocknroll();
 
         return deferred.promise;
+      }
+    };
+
+    function rocknroll () {
+        if ('resolved' === stoned && on.resolve) {
+          on.resolve(resolution);
+          on.resolve = undefined;
+        } else if ('rejected' === stoned && on.reject) {
+          on.reject(resolution);
+          on.reject = undefined;
+        }
+    }
+
+    function stone (value, choice) {
+      if ('pending' === stoned) {
+        resolution = value;
+        stoned = choice;
+        rocknroll ();
+      }
+    };
+
+    function resolver (value, resolutionType) {
+      if (deferAPI.promise === value) {
+        throw new TypeError();
+      } else if (isThenable(value)) {
+        try {
+          var then = value.then;
+        } catch (e) { stone (e, 'rejected'); }
+        if (isFunction (then)) {
+          (function (then) {
+            try {
+              var done = false;
+              then(function (v) {
+                if (done) { return; }
+                try {
+                  done = true;
+                  resolver (v, 'resolved');
+                } catch (e) {
+                  done = true;
+                  resolver (e, 'rejected');
+                }
+              }, function (r) {
+                if (done) { return; }
+                try {
+                  done = true;
+                  resolver (r, 'rejected');
+                } catch (e) {
+                  done = true;
+                  resolver (e, 'rejected');
+                }
+              });
+            } catch (error) {
+              if (done) { return; }
+              done = true;
+              stone (error, 'rejected');
+            }
+          })(then.bind(value));
+        } else {
+          stone (value, resolutionType);
+        }
+      } else {
+        stone (value, resolutionType);
       }
     };
     return deferAPI;
