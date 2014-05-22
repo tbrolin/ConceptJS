@@ -2,5 +2,11 @@
   "name": "concept",
   "version": "0.1.0",
   "main": "dist/concept.min.js",
-  "ignore": ["**/**"]
+  "ignore": [
+    "src",
+    "test",
+    "lib",
+    "Gruntfile.js",
+    "bower.json"
+  ]
 }
