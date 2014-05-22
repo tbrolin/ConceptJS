@@ -1,6 +1,6 @@
-var unIts = require('../src/un.units');
-require('../src/un.units.promise');
+var concept = require('../src/con.concept');
+require('../src/con.concept.promise');
 
-var p = unIts('units.promise');
+var p = concept('concept.promise');
 
 exports.deferred = p.defer;
