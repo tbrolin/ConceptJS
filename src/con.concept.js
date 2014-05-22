@@ -1,4 +1,4 @@
-var unIts = (function () {
+var concept = (function () {
   'use strict';
 
   var units = {};
@@ -58,7 +58,7 @@ var unIts = (function () {
 
     if (!unit) {
       throw error ({
-        'type': 'UNIT-NOT-FOUND',
+        'type': 'CONCEPT-NOT-FOUND',
         'origin': 'un.unit.js',
         'message': 'Unit \"' + unitDescriptor + '\" is not defined.'
       });
