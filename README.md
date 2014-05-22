@@ -1,16 +1,16 @@
 ## Synopsis
 
-conceptjs is a KISS modular framework for javascript projects. It makes it possible to
-structure code in units with well defined interfaces. It also presents the
-notion of dependency management between theese unIts.
+ConceptJS is a KISS modular framework for javascript projects. It makes it possible to
+structure code in 'concepts' with well defined interfaces. It also presents the
+notion of dependency management between theese concepts.
 
 ## Code Example
 
-First define a unit:
+First define a concept:
 
 ```javascript
-    // unIts.define(name?, dependencies?, codeFn?)
-    unIts.define('calc', [], function () {
+    // concept.define(name?, dependencies?, codeFn?)
+    concept.define('calc', [], function () {
       var API = {};
 
       API.add = function (a, b) {
@@ -24,7 +24,7 @@ First define a unit:
 Then use it:
 
 ```javascript
-    var calculator = unIts('calc');
+    var calculator = concept('calc');
     var result = calculator.add(2, 4); // result === 6 ...
 ```
 
@@ -33,7 +33,7 @@ Then use it:
 What's so special with this? Well nothing really, and that I guess is what's so
 special about it. I wanted to write modular javascript code with as little magic
 as possible. A definite goal was that it should be extremely TDD-friendly, write
-a unit test then write the unit (hence the name duh).
+a unit test then write the unit.
 
 ## Installation
 
@@ -41,51 +41,51 @@ a unit test then write the unit (hence the name duh).
 - npm install
 - grunt
 
-...or just copy the content of src/un.units.js to somewhere nice.
+...or just copy the content of src/con.concept.js to somewhere nice.
 
 ## API Reference
 
-### `unIts()`
+### `concept ()`
 
-Returns the unIts version
+Returns the framework version
 
-### `unIts(unitName)`
+### `concept (conceptName)`
 
-If defined, returns an api-instance, if any, of the unit with the name *unitName* (uh, yes,
-if it is a string that is...), If no unit with *unitName* is defined it will `throw`, also,
-if any unit specified as a dependency (see below) to the unit is not defined it will
+If defined, returns an api-instance, if any, of the concept with the name *conceptName* (uh, yes,
+if it is a string that is...), If no concept with *conceptName* is defined it will `throw`, also,
+if any concept specified as a dependency (see below) to the concept is not defined it will
 `throw`.
 
-Any arguments after *unitName* gets passed to the *unitFunction* (see below) of the unit.
+Any arguments after *conceptName* gets passed to the *conceptFunction* (see below) of the concept.
 
-### `unIts(unitDefinition)`
+### `concept (conceptDefinition)`
 
-Extracts an api-instance, if any, from the unit defined by the *unitDefinition*. The
-*unitDefinition* is an object as returned by the `unIts.define()` function. If
-it does not recognize *unitDefinition* as a, well, unit-definition object, it
+Extracts an api-instance, if any, from the concept defined by the *conceptDefinition*. The
+*conceptDefinition* is an object as returned by the `concept.define()` function. If
+it does not recognize *conceptDefinition* as a, well, concept definition object, it
 will `throw`.
 
-### `unIts.define(unitName?, dependencies?, unitFunction?)`
+### `concept.define(conceptName?, dependencies?, conceptFunction?)`
 
-Ok, so *unitName* is a `string`, *dependencies* is an `Array` of strings and
-*unitFunction* is a `Function`. The arguments are all optional, however the
-order which they are specified in is not.
+Ok, so *conceptName* is a `string`, *dependencies* is an `Array` of strings and
+*conceptFunction* is a `Function`. The arguments are all optional, however the
+order in which they are specified is not.
 
-The function returns a *unitDefinition* `object`.
+The function returns a *conceptDefinition* `object`.
 
-#### *unitName*
+#### *conceptName*
 
-If provided, this is the identifier of the unit and is used with the `unIts(unitName)`
-function to get an api-instance of the unit.
+If provided, this is the identifier of the concept and is used with the `concept(conceptName)`
+function to get an api-instance of the concept.
 
 #### *dependencies*
 
-An array of *unitName*s that the unit depends on. Dependencies are checked at evaluation
-time (when the unit is asked for) and not on definition time.
+An array of *conceptName*s that the concept depends on. Dependencies are checked at evaluation
+time (when the concept is asked for) and not on definition time.
 
-#### *unitFunction*
+#### *conceptFunction*
 
-The *unitFunction* is the core of the unit. It returns an api-instance of the unit
+The *conceptFunction* is the core of the concept. It returns an api-instance of the concept
 (if it has one).
 
 ## Examples

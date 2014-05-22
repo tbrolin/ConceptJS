@@ -1,4 +1,4 @@
-var unIts = (function () {
+var concept = (function () {
   'use strict';
 
   var units = {};
@@ -29,16 +29,16 @@ var unIts = (function () {
   };
 
   /**
-   * Get a unit's interface. First argument is either the identifier for
-   * the unit as a string or a unit object itself. Succeeding arguments gets
-   * passed to the unit´s body-function.
+   * Get a concept's interface. First argument is either the identifier for
+   * the concept as a string or a concept object itself. Succeeding arguments gets
+   * passed to the concept´s body-function.
    *
-   * Calling unIts without arguments returns the unIts version.
+   * Calling concept without arguments returns the framework version.
    *
-   * unIts('unitName', [arg0, arg1, ..., argN])
-   * unIts(unit, [arg0, arg1, ..., argN])
+   * concept('conceptName', [arg0, arg1, ..., argN])
+   * concept(conceptObj, [arg0, arg1, ..., argN])
    */
-  var API = function unIts () {
+  var API = function concept () {
     var args = Array.prototype.slice.call(arguments),
         unitDescriptor,
         unit,
@@ -58,9 +58,9 @@ var unIts = (function () {
 
     if (!unit) {
       throw error ({
-        'type': 'UNIT-NOT-FOUND',
-        'origin': 'un.unit.js',
-        'message': 'Unit \"' + unitDescriptor + '\" is not defined.'
+        'type': 'CONCEPT-NOT-FOUND',
+        'origin': 'con.concept.js',
+        'message': 'Concept \"' + unitDescriptor + '\" is not defined.'
       });
     }
 
@@ -68,8 +68,8 @@ var unIts = (function () {
       if (!units[dependency]) {
         throw error({
           'type': 'DEPENDENCY-NOT-FOUND',
-          'origin': 'un.unit.js',
-          'message': 'Unit ' + dependency + ' is not defined.'
+          'origin': 'con.concept.js',
+          'message': 'Concept ' + dependency + ' is not defined.'
         });
       }
     });
@@ -105,8 +105,8 @@ var unIts = (function () {
       } else {
         throw error({
           'type': 'WRONG-ARGUMENTS',
-          'origin': 'un.units.js',
-          'message': 'Could not define unit from arguments.'
+          'origin': 'con.concept.js',
+          'message': 'Could not define concept from arguments.'
         });
       }
     } else if (args.length === 2) {
@@ -122,8 +122,8 @@ var unIts = (function () {
       } else {
         throw error({
           'type': 'WRONG-ARGUMENTS',
-          'origin': 'un.units.js',
-          'message': 'Could not define unit from arguments.'
+          'origin': 'con.concept.js',
+          'message': 'Could not define concept from arguments.'
         });
       }
     } else if (args.length > 2) {
@@ -134,8 +134,8 @@ var unIts = (function () {
       } else {
         throw error({
           'type': 'WRONG-ARGUMENTS',
-          'origin': 'un.units.js',
-          'message': 'Could not define unit from arguments.'
+          'origin': 'con.concept.js',
+          'message': 'Could not define concept from arguments.'
         });
       }
     }
@@ -155,5 +155,5 @@ var unIts = (function () {
 })();
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = unIts;
+  module.exports = concept;
 }

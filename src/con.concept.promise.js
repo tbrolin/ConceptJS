@@ -1,9 +1,9 @@
 if (typeof window === 'undefined') {
-  var unIts = require('./un.units');
+  var concept = require('./con.concept');
   var asap = require('asap');
 }
 
-unIts.define('units.promise', [], function () {
+concept.define('units.promise', [], function () {
   var API = {},
     isObject = unIts.utils.isObject,
     isFunction = unIts.utils.isFunction,
