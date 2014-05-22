@@ -144,10 +144,6 @@ var concept = (function () {
     return units[unitName];
   };
 
-  /**
-   * Creates an error.
-   *
-   */
   API.error = error;
   API.utils = utils;
 
