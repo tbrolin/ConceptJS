@@ -21,7 +21,7 @@ test('Graphs are graphs', function () {
 
 test('Added nodes', function () {
   var g = this.g;
-  ok(g.size === 5, 'Graph has five nodes in it.');
+  ok(g.size === 5, 'Graph has five nodes in it. (' + g.size + ')');
 });
 
 test('Graph has nodes', function () {
