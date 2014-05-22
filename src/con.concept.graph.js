@@ -1,5 +1,5 @@
-concept.define('graph', ['uuid'], function () {
-  var UUID = concept('uuid');
+concept.define('graph', ['concept.uuid'], function () {
+  var UUID = concept('concept.uuid');
 
   if (!this.Graph) {
     var Graph = function () {
