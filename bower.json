@@ -1,5 +1,6 @@
 {
   "name": "concept",
   "version": "0.1.0",
-  "main": "dist/*.js" 
+  "main": "dist/concept.min.js",
+  "ignore": ["**/**"]
 }
