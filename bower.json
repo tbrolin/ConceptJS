@@ -7,6 +7,7 @@
     "test",
     "lib",
     "Gruntfile.js",
-    "bower.json"
+    "bower.json",
+    "package.json"
   ]
 }
