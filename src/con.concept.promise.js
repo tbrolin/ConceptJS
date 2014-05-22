@@ -5,8 +5,8 @@ if (typeof window === 'undefined') {
 
 concept.define('units.promise', [], function () {
   var API = {},
-    isObject = unIts.utils.isObject,
-    isFunction = unIts.utils.isFunction,
+    isObject = concept.utils.isObject,
+    isFunction = concept.utils.isFunction,
     isThenable = function (obj) {
       return ( (isObject(obj) ||  isFunction(obj)) );
     },
