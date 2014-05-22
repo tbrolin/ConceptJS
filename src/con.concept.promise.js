@@ -3,7 +3,7 @@ if (typeof window === 'undefined') {
   var asap = require('asap');
 }
 
-concept.define('units.promise', [], function () {
+concept.define('concept.promise', [], function () {
   var API = {},
     isObject = concept.utils.isObject,
     isFunction = concept.utils.isFunction,
