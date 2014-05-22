@@ -1,12 +1,8 @@
 ## Synopsis
 
-unIts is a KISS modular framework for javascript projects. It makes it possible to
+conceptjs is a KISS modular framework for javascript projects. It makes it possible to
 structure code in units with well defined interfaces. It also presents the
 notion of dependency management between theese unIts.
-
-[![browser support](https://ci.testling.com/tbrolin/unIts.png)](https://ci.testling.com/tbrolin/unIts)
-
-I'm sort of exploring ci.testling.com...
 
 ## Code Example
 
