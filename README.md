@@ -2,7 +2,7 @@
 
 ConceptJS is a KISS modular framework for javascript projects. It makes it possible to
 structure code in 'concepts' with well defined interfaces. It also presents the
-notion of dependency management between theese concepts.
+notion of dependency management between these concepts.
 
 ## Code Example
 
@@ -30,10 +30,11 @@ Then use it:
 
 ## Motivation
 
-What's so special with this? Well nothing really, and that I guess is what's so
+What's so special with ConcwptJS? Well nothing really, and that I guess is what's so
 special about it. I wanted to write modular javascript code with as little magic
 as possible. A definite goal was that it should be extremely TDD-friendly, write
-a unit test then write the unit.
+a unit test then write the unit. Another thing, _performance_ is not (yet) a priority
+of the framework.
 
 ## Installation
 
@@ -65,7 +66,7 @@ Extracts an api-instance, if any, from the concept defined by the *conceptDefini
 it does not recognize *conceptDefinition* as a, well, concept definition object, it
 will `throw`.
 
-### `concept.define(conceptName?, dependencies?, conceptFunction?)`
+### `concept.define (conceptName?, dependencies?, conceptFunction?)`
 
 Ok, so *conceptName* is a `string`, *dependencies* is an `Array` of strings and
 *conceptFunction* is a `Function`. The arguments are all optional, however the
@@ -75,7 +76,7 @@ The function returns a *conceptDefinition* `object`.
 
 #### *conceptName*
 
-If provided, this is the identifier of the concept and is used with the `concept(conceptName)`
+If provided, this is the identifier of the concept and is used with the `concept (conceptName)`
 function to get an api-instance of the concept.
 
 #### *dependencies*
