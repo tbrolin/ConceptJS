@@ -1,7 +1,7 @@
 var concept = (function () {
   'use strict';
 
-  var units = {};
+  var concepts = {};
   var utils = {};
 
   ['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'].forEach(function (name) {
@@ -21,7 +21,7 @@ var concept = (function () {
     }
     err.message = 'ERROR: ' + messages[err.type];
     err.time = new Date();
-    err.type = err.type || 'UNIT-ERROR';
+    err.type = err.type || 'CONCEPT-ERROR';
     err.origin = err.origin || 'UNKNOWN';
     err.rootCause = err.rootCause || 'UNKNOWN';
     // console.log(error.message, error);
@@ -40,32 +40,32 @@ var concept = (function () {
    */
   var API = function concept () {
     var args = Array.prototype.slice.call(arguments),
-        unitDescriptor,
-        unit,
+        conceptDescriptor,
+        concept,
         scope;
 
     if (args.length === 0) {
       return '0.1.0';
     }
 
-    unitDescriptor = args.shift();
+    conceptDescriptor = args.shift();
 
-    if (unitDescriptor.scope && unitDescriptor.deps && unitDescriptor.fn) {
-      unit = unitDescriptor;
+    if (conceptDescriptor.scope && conceptDescriptor.deps && conceptDescriptor.fn) {
+      concept = conceptDescriptor;
     } else {
-      unit = units[unitDescriptor];
+      concept = concepts[conceptDescriptor];
     }
 
-    if (!unit) {
+    if (!concept) {
       throw error ({
         'type': 'CONCEPT-NOT-FOUND',
         'origin': 'con.concept.js',
-        'message': 'Concept \"' + unitDescriptor + '\" is not defined.'
+        'message': 'Concept \"' + conceptDescriptor + '\" is not defined.'
       });
     }
 
-    unit.deps.forEach (function (dependency) {
-      if (!units[dependency]) {
+    concept.deps.forEach (function (dependency) {
+      if (!concepts[dependency]) {
         throw error({
           'type': 'DEPENDENCY-NOT-FOUND',
           'origin': 'con.concept.js',
@@ -74,34 +74,33 @@ var concept = (function () {
       }
     });
 
-    // TODO: Should 'this' point to shared unit scope or like here have a
-    // reference (this.unit) to it?
+    // TODO: Should 'this' point to shared concept scope or like here have a reference (this.concept) to it?
     scope = {};
-    scope.unit = unit.scope;
-    return unit.fn.apply(scope, args);
+    scope.concept = concept.scope;
+    return concept.fn.apply(scope, args);
   };
 
   /**
-   * Defines a new unit.
+   * Defines a new concept.
    *
-   * FIXME: Anonymous units does impose a memory-leak
-   * TODO: Should default unitFn return an empty object?
+   * FIXME: Anonymous concepts does impose a memory-leak
+   * TODO: Should default conceptFn return an empty object?
    *
    * @returns
    */
   API.define = function define () {
-    var unitName = 'anonymous' + new Date().getTime(),
-        unitDeps = [],
-        unitFn = function () { return {}; },
+    var conceptName = 'anonymous' + new Date().getTime(),
+        conceptDeps = [],
+        conceptFn = function () { return {}; },
         args = Array.prototype.slice.call(arguments);
 
     if (args.length === 1) {
       if (utils.isFunction(args[0])) {
-        unitFn = args[0];
+        conceptFn = args[0];
       } else if (utils.isString(args[0])) {
-        unitName = args[0];
+        conceptName = args[0];
       } else if (args[0].forEach) {
-        unitDeps = args[0];
+        conceptDeps = args[0];
       } else {
         throw error({
           'type': 'WRONG-ARGUMENTS',
@@ -111,14 +110,14 @@ var concept = (function () {
       }
     } else if (args.length === 2) {
       if (utils.isString(args[0]) && args[1].forEach) {
-        unitName = args[0];
-        unitDeps = args[1];
+        conceptName = args[0];
+        conceptDeps = args[1];
       } else if (utils.isString(args[0]) && utils.isFunction(args[1])) {
-        unitName = args[0];
-        unitFn = args[1];
+        conceptName = args[0];
+        conceptFn = args[1];
       } else if (args[0].forEach && utils.isFunction(args[1])) {
-        unitDeps = args[0];
-        unitFn = args[1];
+        conceptDeps = args[0];
+        conceptFn = args[1];
       } else {
         throw error({
           'type': 'WRONG-ARGUMENTS',
@@ -128,9 +127,9 @@ var concept = (function () {
       }
     } else if (args.length > 2) {
       if (utils.isString(args[0]) && args[1].forEach && utils.isFunction(args[2])) {
-        unitName = args[0];
-        unitDeps = args[1];
-        unitFn = args[2];
+        conceptName = args[0];
+        conceptDeps = args[1];
+        conceptFn = args[2];
       } else {
         throw error({
           'type': 'WRONG-ARGUMENTS',
@@ -140,8 +139,8 @@ var concept = (function () {
       }
     }
 
-    units[unitName] = { 'scope': {}, 'deps': unitDeps, 'fn': unitFn };
-    return units[unitName];
+    concepts[conceptName] = { 'scope': {}, 'deps': conceptDeps, 'fn': conceptFn };
+    return concepts[conceptName];
   };
 
   /**
