@@ -21,7 +21,7 @@ var concept = (function () {
     }
     err.message = 'ERROR: ' + messages[err.type];
     err.time = new Date();
-    err.type = err.type || 'UNIT-ERROR';
+    err.type = err.type || 'CONCEPT-ERROR';
     err.origin = err.origin || 'UNKNOWN';
     err.rootCause = err.rootCause || 'UNKNOWN';
     // console.log(error.message, error);
